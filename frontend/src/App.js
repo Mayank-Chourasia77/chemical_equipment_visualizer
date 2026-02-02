@@ -31,9 +31,11 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [uploadSuccess, setUploadSuccess] = useState(false);
+  const [history, setHistory] = useState([]);
 
   useEffect(() => {
     fetchLatestData();
+    fetchHistory();
   }, []);
 
   const fetchLatestData = async () => {
@@ -69,6 +71,7 @@ function App() {
       setUploadSuccess(false);
       const response = await axios.post(`${API_URL}/api/upload/`, formData);
       setData(response.data);
+      fetchHistory();
       setUploadSuccess(true);
       setTimeout(() => setUploadSuccess(false), 3000);
     } catch (err) {
@@ -76,6 +79,16 @@ function App() {
     } finally {
       setLoading(false);
       event.target.value = '';
+    }
+  };
+
+  const fetchHistory = async () => {
+    try {
+      // Load the last 5 uploads for the history section.
+      const response = await axios.get(`${API_URL}/api/history/`);
+      setHistory(response.data);
+    } catch (err) {
+      setHistory([]);
     }
   };
 
@@ -147,6 +160,8 @@ function App() {
       },
     },
   };
+
+  const formatAverage = (value) => (Number.isFinite(value) ? value.toFixed(2) : '-');
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -286,7 +301,7 @@ function App() {
               </Card>
             )}
 
-            <Card data-testid="equipment-table" className="border-gray-200 shadow-sm">
+            <Card data-testid="equipment-table" className="mb-8 border-gray-200 shadow-sm">
               <CardHeader>
                 <CardTitle className="text-gray-900">Equipment Data</CardTitle>
                 <CardDescription className="text-gray-600">
@@ -324,6 +339,56 @@ function App() {
                 </div>
               </CardContent>
             </Card>
+
+            {history.length > 0 && (
+              <Card data-testid="upload-history" className="mb-8 border-gray-200 shadow-sm">
+                <CardHeader>
+                  <CardTitle className="text-gray-900">Upload History</CardTitle>
+                  <CardDescription className="text-gray-600">
+                    Last 5 uploads
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b border-gray-200">
+                          <th className="text-left py-3 px-4 font-semibold text-gray-700">Upload Time</th>
+                          <th className="text-left py-3 px-4 font-semibold text-gray-700">Total Equipment</th>
+                          <th className="text-left py-3 px-4 font-semibold text-gray-700">Avg Flowrate</th>
+                          <th className="text-left py-3 px-4 font-semibold text-gray-700">Avg Pressure</th>
+                          <th className="text-left py-3 px-4 font-semibold text-gray-700">Avg Temperature</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {history.map((upload) => (
+                          <tr
+                            key={upload.id}
+                            className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
+                          >
+                            <td className="py-3 px-4 text-gray-900">
+                              {new Date(upload.uploaded_at).toLocaleString()}
+                            </td>
+                            <td className="py-3 px-4 text-gray-700">
+                              {Number.isFinite(upload.total_equipment) ? upload.total_equipment : '-'}
+                            </td>
+                            <td className="py-3 px-4 text-gray-700">
+                              {formatAverage(upload.average_flowrate)}
+                            </td>
+                            <td className="py-3 px-4 text-gray-700">
+                              {formatAverage(upload.average_pressure)}
+                            </td>
+                            <td className="py-3 px-4 text-gray-700">
+                              {formatAverage(upload.average_temperature)}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </>
         )}
 

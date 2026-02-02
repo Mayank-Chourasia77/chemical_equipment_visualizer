@@ -63,7 +63,15 @@ def upload_csv(request):
         )
     
     csv_file.seek(0)
-    upload = EquipmentUpload.objects.create(csv_file=csv_file)
+    stats = result['stats']
+    # Store summary stats with the upload for history display.
+    upload = EquipmentUpload.objects.create(
+        csv_file=csv_file,
+        total_equipment=stats['total_equipment'],
+        average_flowrate=stats['average_flowrate'],
+        average_pressure=stats['average_pressure'],
+        average_temperature=stats['average_temperature'],
+    )
     
     return Response({
         'id': upload.id,
@@ -102,6 +110,23 @@ def get_latest(request):
             {'error': str(e)},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
+
+@api_view(['GET'])
+def get_history(request):
+    uploads = EquipmentUpload.objects.order_by('-uploaded_at')[:5]
+    # Return last 5 uploads with stored summary stats.
+    history = [
+        {
+            'id': upload.id,
+            'uploaded_at': upload.uploaded_at,
+            'total_equipment': upload.total_equipment,
+            'average_flowrate': upload.average_flowrate,
+            'average_pressure': upload.average_pressure,
+            'average_temperature': upload.average_temperature,
+        }
+        for upload in uploads
+    ]
+    return Response(history)
 
 @api_view(['GET'])
 def generate_pdf(request):
