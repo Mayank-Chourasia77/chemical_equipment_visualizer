@@ -67,11 +67,7 @@ function App() {
       setLoading(true);
       setError(null);
       setUploadSuccess(false);
-      const response = await axios.post(`${API_URL}/api/upload/`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      const response = await axios.post(`${API_URL}/api/upload/`, formData);
       setData(response.data);
       setUploadSuccess(true);
       setTimeout(() => setUploadSuccess(false), 3000);

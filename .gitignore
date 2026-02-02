@@ -78,3 +78,9 @@ agenthub/agents/youtube/db
 
 # Mobile development
 android-sdk/ 
+# Django runtime
+backend/db.sqlite3
+backend/media/
+
+# Node
+frontend/package-lock.json
