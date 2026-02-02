@@ -107,7 +107,7 @@ By default, the frontend reads the backend URL from `frontend/.env`:
 REACT_APP_BACKEND_URL=http://127.0.0.1:8000
 ```
 
-### 3) Desktop App (Optional)
+### 3) Desktop App
 
 ```bash
 cd desktop
