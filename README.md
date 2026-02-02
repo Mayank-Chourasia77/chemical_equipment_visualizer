@@ -149,11 +149,17 @@ $env:CHEM_EQUIP_API_URL="http://127.0.0.1:8000/api/upload/"
 
 ## Screenshots
 
-- Dashboard view (placeholder)
-- Upload flow (placeholder)
-- PDF report (placeholder)
-- Desktop app (placeholder)
+- Dashboard view :
+![alt text](screenshots/frontscreen-1.png)
 
+- Upload flow :
+![alt text](screenshots/frontscreen-2.png)
+
+- Desktop app :
+![alt text](screenshots/desktop.png)
+
+- PDF report :
+[text](screenshots/equipment_report.pdf)
 ---
 
 ## License
